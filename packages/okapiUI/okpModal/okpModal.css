@@ -1,0 +1,39 @@
+.okp-modal-container {
+  overflow-y: auto;
+}
+
+.okp-modal-container-large-h {
+  max-height: 640px !important;
+}
+
+.okp-modal-container-mini-h {
+  max-height: 440px !important;
+}
+
+.okp-modal-container-large-w {
+  width: 912px !important;
+}
+
+.okp-modal-container-mini-w {
+  width: 352px !important;
+}
+
+.okp-modal-content {
+  padding: 24px !important;
+  min-width: 400px !important;
+}
+
+.okp-modal-header {
+  height: 72px !important;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.okp-modal-footer {
+  height: 64px !important;
+  margin-top: 24px !important;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}

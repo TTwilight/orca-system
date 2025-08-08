@@ -1,0 +1,28 @@
+{
+  "port": "6752",
+  "debug": false,
+  "notAllowedDeleteLog": false,
+  "rpcAddress": [
+    {
+      "ip": "10.200.219.109",
+      "port": "20008"
+    },
+    {
+      "ip": "10.204.131.179",
+      "port": "20008"
+    },
+    {
+      "ip": "10.200.145.99",
+      "port": "20008"
+    },
+    {
+      "ip": "10.204.126.26",
+      "port": "20008"
+    }
+  ],
+  "corsConfig": null,
+  "storageConfig": null,
+  "maxRoomNumber": 0,
+  "maxLogFileSizeOfMB": 0,
+  "maxLogLifeTimeOfHour": 0
+}

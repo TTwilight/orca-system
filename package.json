@@ -1,0 +1,50 @@
+{
+  "name": "orca-system",
+  "version": "0.0.0",
+  "private": true,
+  "description": "",
+  "author": "",
+  "license": "UNLICENSED",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "start": "turbo start",
+    "start:win": "turbo start:win",
+    "build-qa": "turbo build-qa",
+    "build-stage": "turbo build-stage",
+    "build-product": "turbo build-product",
+    "postinstall": "changeset init",
+    "test": "turbo test",
+    "test:e2e": "turbo test:e2e",
+    "lint": "turbo lint",
+    "version": "changeset version",
+    "prepare": "husky install .husky"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,css,scss,md}": [
+      "prettier --write"
+    ]
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2.27.7",
+    "@commitlint/cli": "^17.0.1",
+    "@commitlint/config-conventional": "^17.0.0",
+    "@umijs/plugin-qiankun": "^2.44.1",
+    "eslint": "^8.40.0",
+    "husky": "^8.0.3",
+    "lint-staged": "^15.2.0",
+    "pm2": "^5.4.2",
+    "prettier": "^3.2.4",
+    "turbo": "^2.0.4"
+  },
+  "packageManager": "pnpm@8.15.5",
+  "engines": {
+    "node": ">=20"
+  }
+}

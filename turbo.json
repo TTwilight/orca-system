@@ -1,0 +1,25 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "tasks": {
+    "start": {
+      "dependsOn": ["^start"],
+      "outputs": ["dist/**"]
+    },
+    "start:win": {
+      "dependsOn": ["^start:win"],
+      "outputs": ["dist/**"]
+    },
+    "build-qa": {
+      "dependsOn": ["^build-qa"],
+      "outputs": ["dist/**"]
+    },
+    "build-stage": {
+      "dependsOn": ["^build-stage"],
+      "outputs": ["dist/**"]
+    },
+    "build-product": {
+      "dependsOn": ["^build-product"],
+      "outputs": ["dist/**"]
+    }
+  }
+}

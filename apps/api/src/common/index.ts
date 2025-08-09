@@ -12,3 +12,9 @@ export * from './constants/error-code.constant';
 
 // 异常
 export * from './exceptions/business.exception';
+
+// 守卫
+export * from './guards/auth.guard';
+
+// 装饰器
+export * from './decorators/current-user.decorator';

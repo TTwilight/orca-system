@@ -34,7 +34,7 @@ export class User {
    * 用户邮箱
    * 用于登录和身份验证
    */
-  @Column({ length: 50, unique: true })
+  @Column({ length: 50 })
   email: string;
 
   /**
@@ -47,7 +47,7 @@ export class User {
    * 用户原始密码
    * 不存储到数据库，仅用于注册和修改密码时的临时存储
    */
-  @Column({ select: false, insert: false, update: false, nullable: true })
+  @Column({ select: false })
   password: string;
 
   /**

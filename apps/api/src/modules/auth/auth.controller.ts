@@ -1,4 +1,5 @@
-import { Controller, Post, Body, UnauthorizedException } from '@nestjs/common';
+import { Controller, Post, Body } from '@nestjs/common';
+import { BusinessException, ErrorCode } from '../../common';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from '../user/dto/create-user.dto';
 
@@ -36,7 +37,7 @@ export class AuthController {
   async validateToken(@Body('token') token: string) {
     const user = await this.authService.validateToken(token);
     if (!user) {
-      throw new UnauthorizedException('无效的token');
+      throw new BusinessException(ErrorCode.TOKEN_INVALID);
     }
     return { valid: true, user };
   }

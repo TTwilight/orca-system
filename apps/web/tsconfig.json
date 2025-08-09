@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
+    "module": "esnext",
     "target": "ES2020",
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
@@ -24,7 +24,11 @@
       {
         "name": "next"
       }
-    ]
+    ],
+    "paths": {
+      "@/*": ["./src/*"],
+      "@styles/*": ["./src/styles/*"]
+    }
   },
   "include": ["src/**/*", ".next/types/**/*.ts"],
   "exclude": ["node_modules", "dist"]

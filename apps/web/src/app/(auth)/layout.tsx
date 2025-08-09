@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   title: 'Orca System',
   description: 'A modern web application built with Next.js in a monorepo structure',
   icons: {
-    icon: '/favicon.svg',
+    icon: '/favicon.png',
   },
 };
 

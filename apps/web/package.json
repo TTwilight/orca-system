@@ -3,8 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "prebuild": "rimraf dist",
+    "build-qa": "NODE_ENV=qa nest build",
+    "build-stage": "NODE_ENV=stage nest build",
+    "build-product": "NODE_ENV=product nest build",
     "start": "next dev --turbopack",
-    "build": "next build",
     "prod-start": "next start",
     "lint": "next lint"
   },

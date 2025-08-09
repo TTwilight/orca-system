@@ -12,10 +12,12 @@ async function bootstrap() {
 
   app.use(json({ limit: '10mb' }));
 
-  app.useGlobalPipes(new ValidationPipe({
-    whitelist: true,
-    transform: true,
-  }));
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      transform: true,
+    }),
+  );
 
   const configService = app.get(ConfigService);
   const port = configService.get('PORT', 8080);

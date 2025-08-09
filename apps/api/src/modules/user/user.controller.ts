@@ -19,17 +19,23 @@ export class UserController {
   }
 
   @Post('detail')
-  findOne(@Body('id') id: string) {
-    return this.userService.findOne(id);
+  findOne(@Body('id') id: string | number) {
+    const userId = Number(id);
+    return this.userService.findOne(userId);
   }
 
   @Post('update')
-  update(@Body('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.userService.update(id, updateUserDto);
+  update(
+    @Body('id') id: string | number,
+    @Body() updateUserDto: UpdateUserDto,
+  ) {
+    const userId = Number(id);
+    return this.userService.update(userId, updateUserDto);
   }
 
   @Post('delete')
-  remove(@Body('id') id: string) {
-    return this.userService.remove(id);
+  remove(@Body('id') id: string | number) {
+    const userId = Number(id);
+    return this.userService.remove(userId);
   }
 }

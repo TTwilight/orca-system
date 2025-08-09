@@ -9,7 +9,7 @@
     "build-product": "NODE_ENV=product nest build",
     "start": "next dev --turbopack",
     "prod-start": "next start",
-    "lint": "next lint"
+    "lint": "eslint --config eslint.config.cjs ."
   },
   "dependencies": {
     "react": "^19.0.0",

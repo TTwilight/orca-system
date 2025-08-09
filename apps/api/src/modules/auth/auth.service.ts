@@ -1,4 +1,8 @@
-import { Injectable, UnauthorizedException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  UnauthorizedException,
+  BadRequestException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../user/user.service';
 import { CreateUserDto } from '../user/dto/create-user.dto';
@@ -13,7 +17,9 @@ export class AuthService {
 
   async register(createUserDto: CreateUserDto) {
     // 检查用户是否已存在
-    const existingUser = await this.userService.findByEmail(createUserDto.email);
+    const existingUser = await this.userService.findByEmail(
+      createUserDto.email,
+    );
     if (existingUser) {
       throw new BadRequestException('用户已存在');
     }
@@ -32,7 +38,7 @@ export class AuthService {
       user: {
         id: user.id,
         email: user.email,
-        username: user.username,
+        name: user.name,
       },
       token,
     };
@@ -44,7 +50,7 @@ export class AuthService {
       throw new UnauthorizedException('邮箱或密码错误');
     }
 
-    const isPasswordValid = await bcrypt.compare(password, user.password);
+    const isPasswordValid = await bcrypt.compare(password, user.password_hash);
     if (!isPasswordValid) {
       throw new UnauthorizedException('邮箱或密码错误');
     }
@@ -55,7 +61,7 @@ export class AuthService {
       user: {
         id: user.id,
         email: user.email,
-        username: user.username,
+        username: user.name,
       },
       token,
     };

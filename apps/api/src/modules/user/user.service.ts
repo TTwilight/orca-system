@@ -1,47 +1,90 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  NotFoundException,
+} from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from '@/database/entities/user.entity';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService {
-  private readonly users: User[] = [];
+  constructor(
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
+  ) {}
 
-  create(createUserDto: CreateUserDto) {
-    // 这里应该添加实际的数据库操作
-    const user = new User();
-    this.users.push(user);
+  async create(createUserDto: CreateUserDto): Promise<User> {
+    // 检查手机号是否已被注册
+    const existingUser = await this.findByPhone(createUserDto.phone);
+    if (existingUser) {
+      throw new BadRequestException('该手机号已被注册');
+    }
+
+    const password = createUserDto.password || '123456';
+
+    const user = this.userRepository.create({
+      ...createUserDto,
+      password: password,
+      // 设置默认密码和用户类型
+      user_type: createUserDto.user_type || 'customer',
+    });
+
+    // 密码加盐处理
+    const salt = await bcrypt.genSalt();
+    user.password_hash = await bcrypt.hash(password, salt);
+
+    return await this.userRepository.save(user);
+  }
+
+  async findAll(): Promise<User[]> {
+    return await this.userRepository.find();
+  }
+
+  async findOne(id: number): Promise<User> {
+    const user = await this.userRepository.findOneBy({ id });
+    if (!user) {
+      throw new NotFoundException(`未找到ID为${id}的用户`);
+    }
     return user;
   }
 
-  findAll() {
-    return this.users;
+  async findByEmail(email: string): Promise<User | null> {
+    return await this.userRepository.findOneBy({ email });
   }
 
-  findOne(id: string) {
-    return this.users.find((user) => user.id === Number(id));
+  async findByPhone(phone: string): Promise<User | null> {
+    return await this.userRepository.findOneBy({ phone });
   }
 
-  findByEmail(email: string) {
-    return this.users.find((user) => user.email === email);
-  }
+  async update(id: number, updateUserDto: UpdateUserDto): Promise<User> {
+    const user = await this.findOne(id);
 
-  update(id: string, updateUserDto: UpdateUserDto) {
-    const index = this.users.findIndex((user) => user.id === Number(id));
-    if (index > -1) {
-      this.users[index] = { ...this.users[index], ...updateUserDto };
-      return this.users[index];
+    let passwordObj = {};
+    // 如果更新包含密码，需要重新加盐
+    if (updateUserDto.password) {
+      const salt = await bcrypt.genSalt();
+      const password_hash = await bcrypt.hash(updateUserDto.password, salt);
+      passwordObj = {
+        password_hash: password_hash,
+        password: updateUserDto.password,
+      };
     }
-    return null;
+
+    Object.assign(user, updateUserDto, passwordObj);
+    return await this.userRepository.save(user);
   }
 
-  remove(id: string) {
-    const index = this.users.findIndex((user) => user.id === Number(id));
-    if (index > -1) {
-      const user = this.users[index];
-      this.users.splice(index, 1);
-      return user;
+  async remove(id: number): Promise<User | null> {
+    const user = await this.findOne(id);
+    if (!user) {
+      // 记录用户不存在的日志
+      console.log(`尝试删除不存在的用户，ID: ${id}`);
+      return null;
     }
-    return null;
+    return await this.userRepository.remove(user);
   }
 }

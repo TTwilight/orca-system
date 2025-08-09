@@ -6,6 +6,7 @@ import { ConfigModule } from '@nestjs/config';
 import { UserModule } from './modules/user/user.module';
 import { DatabaseModule } from './database/database.module';
 import { join } from 'path';
+import { AuthModule } from './modules/auth/auth.module';
 const nodeEnv = process.env.NODE_ENV || 'development';
 @Module({
   imports: [
@@ -18,6 +19,7 @@ const nodeEnv = process.env.NODE_ENV || 'development';
     }),
     HttpModule,
     DatabaseModule,
+    AuthModule,
     UserModule,
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '../../web/dist'),

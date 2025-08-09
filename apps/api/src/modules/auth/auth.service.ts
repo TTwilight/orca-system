@@ -41,8 +41,8 @@ export class AuthService {
     });
   }
 
-  async login(email: string, password: string) {
-    const user = await this.userService.findByEmail(email);
+  async loginEmail(email: string, password: string) {
+    const user = await this.userService.findPwdHashByEmail(email);
     if (!user) {
       throw new BusinessException(ErrorCode.PASSWORD_ERROR, '邮箱或密码错误');
     }
@@ -55,11 +55,30 @@ export class AuthService {
     const token = this.jwtService.sign({ userId: user.id, email: user.email });
 
     return ResponseUtil.success({
-      user: {
-        id: user.id,
-        email: user.email,
-        username: user.name,
-      },
+      username: user.name,
+      token,
+    });
+  }
+
+  async loginMobile(phone: string, password: string) {
+    console.log(phone, password);
+
+    const user = await this.userService.findPwdHashByPhone(phone);
+    if (!user) {
+      throw new BusinessException(ErrorCode.PASSWORD_ERROR, '手机号或密码错误');
+    }
+
+    console.log(user);
+
+    const isPasswordValid = await bcrypt.compare(password, user.password_hash);
+    if (!isPasswordValid) {
+      throw new BusinessException(ErrorCode.PASSWORD_ERROR, '手机号或密码错误');
+    }
+
+    const token = this.jwtService.sign({ userId: user.id, phone: user.phone });
+
+    return ResponseUtil.success({
+      username: user.name,
       token,
     });
   }

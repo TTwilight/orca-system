@@ -1,8 +1,16 @@
-import { IsString, IsEmail, MinLength } from 'class-validator';
+import { IsString, IsEmail, MinLength, IsPhoneNumber } from 'class-validator';
 
-export class LoginDto {
+export class LoginEmailDto {
   @IsEmail()
   email: string;
+
+  @IsString()
+  @MinLength(6)
+  password: string;
+}
+export class LoginMobileDto {
+  @IsPhoneNumber()
+  phone: string;
 
   @IsString()
   @MinLength(6)

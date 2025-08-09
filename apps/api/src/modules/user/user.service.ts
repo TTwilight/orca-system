@@ -62,9 +62,22 @@ export class UserService {
   async findByEmail(email: string): Promise<User | null> {
     return await this.userRepository.findOneBy({ email });
   }
+  async findPwdHashByEmail(email: string): Promise<User | null> {
+    return await this.userRepository.findOne({
+      where: { email },
+      select: ['password_hash', 'id', 'email', 'name', 'avatar'],
+    });
+  }
 
   async findByPhone(phone: string): Promise<User | null> {
     return await this.userRepository.findOneBy({ phone });
+  }
+
+  async findPwdHashByPhone(phone: string): Promise<User | null> {
+    return await this.userRepository.findOne({
+      where: { phone },
+      select: ['password_hash', 'id', 'phone', 'name', 'avatar'],
+    });
   }
 
   async update(id: number, updateUserDto: UpdateUserDto): Promise<User | null> {

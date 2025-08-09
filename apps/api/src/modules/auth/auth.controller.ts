@@ -2,6 +2,7 @@ import { Controller, Post, Body } from '@nestjs/common';
 import { BusinessException, ErrorCode } from '../../common';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from '../user/dto/create-user.dto';
+import { LoginEmailDto, LoginMobileDto } from './dto/auth.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -12,12 +13,20 @@ export class AuthController {
     return this.authService.register(createUserDto);
   }
 
-  @Post('login')
-  async login(
-    @Body('email') email: string,
-    @Body('password') password: string,
-  ) {
-    return this.authService.login(email, password);
+  @Post('loginByEmail')
+  async loginEmail(@Body() loginEmailDto: LoginEmailDto) {
+    return this.authService.loginEmail(
+      loginEmailDto.email,
+      loginEmailDto.password,
+    );
+  }
+
+  @Post('loginByMobile')
+  async loginMobile(@Body() loginMobileDto: LoginMobileDto) {
+    return this.authService.loginMobile(
+      loginMobileDto.phone,
+      loginMobileDto.password,
+    );
   }
 
   @Post('forgot-password')

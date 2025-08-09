@@ -6,6 +6,8 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
+import { UnauthorizedException } from '../exceptions/business.exception';
+import { ErrorCode } from '../constants/error-code.constant';
 
 @Catch(HttpException)
 export class HttpExceptionFilter implements ExceptionFilter {
@@ -17,7 +19,14 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const exceptionResponse = exception.getResponse();
 
     let message = '请求失败';
-    if (typeof exceptionResponse === 'string') {
+    let code = '-1';
+
+    if (exception instanceof UnauthorizedException) {
+      // 处理自定义的 UnauthorizedException
+      const exceptionResponse = exception.getResponse() as any;
+      code = exceptionResponse.code || ErrorCode.TOKEN_INVALID;
+      message = exceptionResponse.msg || '认证已过期';
+    } else if (typeof exceptionResponse === 'string') {
       message = exceptionResponse;
     } else if (
       typeof exceptionResponse === 'object' &&
@@ -31,14 +40,15 @@ export class HttpExceptionFilter implements ExceptionFilter {
       'msg' in exceptionResponse
     ) {
       message = (exceptionResponse.msg as string) || message;
+      if ('code' in exceptionResponse) {
+        code = (exceptionResponse.code as string) || code;
+      }
     }
 
     response.status(status).json({
-      code: '-1',
+      code,
       data: null,
-      // msg: `[${status}] ${message}`,
       msg: message,
-      // path: request.url,
       timestamp: new Date().toISOString(),
     });
   }
@@ -57,7 +67,14 @@ export class AllExceptionsFilter implements ExceptionFilter {
         : HttpStatus.INTERNAL_SERVER_ERROR;
 
     let message = '服务器内部错误';
-    if (exception instanceof HttpException) {
+    let code = '-1';
+
+    if (exception instanceof UnauthorizedException) {
+      // 处理自定义的 UnauthorizedException
+      const exceptionResponse = exception.getResponse() as any;
+      code = exceptionResponse.code || '401';
+      message = exceptionResponse.msg || '未授权';
+    } else if (exception instanceof HttpException) {
       const exceptionResponse = exception.getResponse();
       if (typeof exceptionResponse === 'string') {
         message = exceptionResponse;
@@ -73,17 +90,18 @@ export class AllExceptionsFilter implements ExceptionFilter {
         'msg' in exceptionResponse
       ) {
         message = (exceptionResponse.msg as string) || message;
+        if ('code' in exceptionResponse) {
+          code = (exceptionResponse.code as string) || code;
+        }
       }
     } else if (exception instanceof Error) {
       message = exception.message;
     }
 
     response.status(status).json({
-      code: '-1',
+      code,
       data: null,
-      // msg: `[${status}] ${message}`,
       msg: message,
-      // path: request.url,
       timestamp: new Date().toISOString(),
     });
   }

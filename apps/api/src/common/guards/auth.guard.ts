@@ -37,7 +37,10 @@ export class AuthGuard implements CanActivate {
     const token = this.extractTokenFromHeader(request);
 
     if (!token) {
-      throw new UnauthorizedException('未提供认证令牌');
+      throw new UnauthorizedException(
+        ErrorCode.TOKEN_INVALID,
+        '未提供认证令牌',
+      );
     }
 
     try {
@@ -46,9 +49,9 @@ export class AuthGuard implements CanActivate {
       request['user'] = payload;
     } catch (error) {
       if (error.name === 'TokenExpiredError') {
-        throw new UnauthorizedException(ErrorCode.TOKEN_EXPIRED);
+        throw new UnauthorizedException(ErrorCode.TOKEN_EXPIRED, '认证已过期');
       }
-      throw new UnauthorizedException(ErrorCode.TOKEN_INVALID);
+      throw new UnauthorizedException(ErrorCode.TOKEN_INVALID, '认证令牌无效');
     }
 
     return true;

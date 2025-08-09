@@ -49,10 +49,13 @@ export class ParamException extends HttpException {
  * 未授权异常类
  */
 export class UnauthorizedException extends HttpException {
-  constructor(message = ErrorMessage[ErrorCode.UNAUTHORIZED]) {
+  constructor(
+    code = ErrorCode.UNAUTHORIZED,
+    message = ErrorMessage[ErrorCode.UNAUTHORIZED],
+  ) {
     super(
       {
-        code: ErrorCode.UNAUTHORIZED,
+        code: code || ErrorCode.UNAUTHORIZED,
         data: null,
         msg: message,
       },

@@ -1,37 +1,29 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
+import { useState } from "react";
+import { forgotPassword } from "@/services/auth";
 
 export default function ForgotPasswordPage() {
-  const [email, setEmail] = useState('');
-  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
-  const [message, setMessage] = useState('');
+  const [email, setEmail] = useState("");
+  const [status, setStatus] = useState<
+    "idle" | "loading" | "success" | "error"
+  >("idle");
+  const [message, setMessage] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setStatus('loading');
-    setMessage('');
+    setStatus("loading");
+    setMessage("");
 
     try {
-      const response = await fetch('http://localhost:8080/auth/forgot-password', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email }),
-      });
+      // 使用 auth 服务的 forgotPassword 函数
+      const result = await forgotPassword({ email });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || '请求失败');
-      }
-
-      setStatus('success');
-      setMessage('重置密码链接已发送到您的邮箱，请查收');
+      setStatus("success");
+      setMessage("重置密码链接已发送到您的邮箱，请查收");
     } catch (err) {
-      setStatus('error');
-      setMessage(err instanceof Error ? err.message : '发送重置密码邮件失败');
+      setStatus("error");
+      setMessage(err instanceof Error ? err.message : "发送重置密码邮件失败");
     }
   };
 
@@ -49,7 +41,7 @@ export default function ForgotPasswordPage() {
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           {message && (
             <div
-              className={`text-center text-sm ${status === 'success' ? 'text-green-500' : 'text-red-500'}`}
+              className={`text-center text-sm ${status === "success" ? "text-green-500" : "text-red-500"}`}
             >
               {message}
             </div>
@@ -84,10 +76,10 @@ export default function ForgotPasswordPage() {
           <div>
             <button
               type="submit"
-              disabled={status === 'loading'}
-              className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white ${status === 'loading' ? 'bg-indigo-400 cursor-not-allowed' : 'bg-indigo-600 hover:bg-indigo-700'} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
+              disabled={status === "loading"}
+              className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white ${status === "loading" ? "bg-indigo-400 cursor-not-allowed" : "bg-indigo-600 hover:bg-indigo-700"} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
             >
-              {status === 'loading' ? '发送中...' : '发送重置链接'}
+              {status === "loading" ? "发送中..." : "发送重置链接"}
             </button>
           </div>
         </form>

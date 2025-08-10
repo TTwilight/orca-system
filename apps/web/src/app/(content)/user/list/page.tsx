@@ -1,87 +1,51 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { getUserList, deleteUser, UserListItem } from "@/services/user";
 
-interface User {
-  id: string;
-  username: string;
-  email: string;
-  fullName?: string;
-  avatar?: string;
-  createdAt: string;
-  updatedAt: string;
-}
+// 使用从 user 服务导入的 UserListItem 接口
 
 export default function UserListPage() {
   const router = useRouter();
-  const [users, setUsers] = useState<User[]>([]);
+  const [users, setUsers] = useState<UserListItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [deleteStatus, setDeleteStatus] = useState<{ [key: string]: boolean }>({});
+  const [error, setError] = useState("");
+  const [deleteStatus, setDeleteStatus] = useState<{ [key: string]: boolean }>(
+    {},
+  );
 
   useEffect(() => {
     fetchUsers();
   }, []);
 
   const fetchUsers = async () => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      router.push('/login');
-      return;
-    }
-
     try {
-      const response = await fetch('http://localhost:8080/user/list', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-      });
+      // 使用 user 服务的 getUserList 函数获取用户列表
+      const result = await getUserList();
 
-      if (!response.ok) {
-        if (response.status === 401) {
-          localStorage.removeItem('token');
-          router.push('/login');
-          return;
-        }
-        throw new Error('获取用户列表失败');
+      if (result.data) {
+        setUsers(result.data);
       }
-
-      const data = await response.json();
-      setUsers(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : '获取用户列表失败');
+      // 如果是 401 未授权错误，会在 request.ts 中自动处理重定向到登录页面
+      setError(err instanceof Error ? err.message : "获取用户列表失败");
     } finally {
       setLoading(false);
     }
   };
 
   const handleDelete = async (userId: string) => {
-    const token = localStorage.getItem('token');
-    if (!token) return;
-
     setDeleteStatus({ ...deleteStatus, [userId]: true });
 
     try {
-      const response = await fetch('http://localhost:8080/user/delete', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify({ id: userId }),
-      });
-
-      if (!response.ok) {
-        throw new Error('删除用户失败');
-      }
+      // 使用 user 服务的 deleteUser 函数删除用户
+      await deleteUser(userId);
 
       // 重新获取用户列表
       fetchUsers();
     } catch (err) {
-      setError(err instanceof Error ? err.message : '删除用户失败');
+      setError(err instanceof Error ? err.message : "删除用户失败");
     } finally {
       setDeleteStatus({ ...deleteStatus, [userId]: false });
     }
@@ -167,14 +131,16 @@ export default function UserListPage() {
                       {user.email}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {user.fullName || '-'}
+                      {user.fullName || "-"}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {new Date(user.createdAt).toLocaleString()}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <button
-                        onClick={() => router.push(`/user/profile?id=${user.id}`)}
+                        onClick={() =>
+                          router.push(`/user/profile?id=${user.id}`)
+                        }
                         className="text-indigo-600 hover:text-indigo-900 mr-4"
                       >
                         查看
@@ -182,9 +148,9 @@ export default function UserListPage() {
                       <button
                         onClick={() => handleDelete(user.id)}
                         disabled={deleteStatus[user.id]}
-                        className={`text-red-600 hover:text-red-900 ${deleteStatus[user.id] ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        className={`text-red-600 hover:text-red-900 ${deleteStatus[user.id] ? "opacity-50 cursor-not-allowed" : ""}`}
                       >
-                        {deleteStatus[user.id] ? '删除中...' : '删除'}
+                        {deleteStatus[user.id] ? "删除中..." : "删除"}
                       </button>
                     </td>
                   </tr>

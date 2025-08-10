@@ -40,7 +40,7 @@ export function redirectLogin() {
   RemoveSessionToken();
   localStorage.removeItem("business");
   setTimeout(() => {
-    router.push("/login/index");
+    router.push("/login");
   }, 1000);
 }
 

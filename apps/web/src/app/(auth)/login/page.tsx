@@ -1,123 +1,128 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { Card, Form, Input, Button, Tabs, message } from "antd";
+import {
+  UserOutlined,
+  LockOutlined,
+  MailOutlined,
+  PhoneOutlined,
+} from "@ant-design/icons";
+import { loginByEmail, loginByMobile } from "@/services/auth";
 
 export default function LoginPage() {
   const router = useRouter();
-  const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-  });
-  const [error, setError] = useState('');
+  const [form] = Form.useForm();
+  const [loginType, setLoginType] = useState<"email" | "phone">("email");
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
+  function handleLogin() {
+    form.submit();
+  }
 
+  const handleSubmit = async (values: any) => {
     try {
-      const response = await fetch('http://localhost:8080/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
+      let result;
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || '登录失败');
+      if (loginType === "email") {
+        result = await loginByEmail({
+          email: values.email,
+          password: values.password,
+        });
+      } else {
+        result = await loginByMobile({
+          phone: values.phone,
+          password: values.password,
+        });
       }
 
-      // 存储token
-      localStorage.setItem('token', data.token);
-      
-      // 跳转到首页
-      router.push('/');
+      message.success("登录成功");
+      router.push("/");
     } catch (err) {
-      setError(err instanceof Error ? err.message : '登录失败');
+      message.error(err instanceof Error ? err.message : "登录失败");
     }
   };
 
+  const tabItems = [
+    {
+      key: "email",
+      label: "邮箱登录",
+    },
+    {
+      key: "phone",
+      label: "手机号登录",
+    },
+  ];
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-lg shadow">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            登录账户
-          </h2>
+      <Card className="w-[400px]">
+        <div className="flex justify-center mb-1">
+          <img src="/favicon.png" alt="Logo" className="h-12 w-12" />
         </div>
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          {error && (
-            <div className="text-red-500 text-center text-sm">{error}</div>
-          )}
-          <div className="rounded-md shadow-sm -space-y-px">
-            <div>
-              <label htmlFor="email" className="sr-only">
-                邮箱地址
-              </label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                placeholder="邮箱地址"
-                value={formData.email}
-                onChange={(e) =>
-                  setFormData({ ...formData, email: e.target.value })
-                }
-              />
-            </div>
-            <div>
-              <label htmlFor="password" className="sr-only">
-                密码
-              </label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                placeholder="密码"
-                value={formData.password}
-                onChange={(e) =>
-                  setFormData({ ...formData, password: e.target.value })
-                }
-              />
-            </div>
-          </div>
+        <h2 className="text-center text-xl font-bold mb-2">登录账户</h2>
 
-          <div className="flex items-center justify-between">
-            <div className="text-sm">
-              <a
-                href="/login/register"
-                className="font-medium text-indigo-600 hover:text-indigo-500"
-              >
-                注册新账户
-              </a>
-            </div>
-            <div className="text-sm">
-              <a
-                href="/login/forgot-password"
-                className="font-medium text-indigo-600 hover:text-indigo-500"
-              >
-                忘记密码？
-              </a>
-            </div>
-          </div>
+        <Form form={form} onFinish={handleSubmit} layout="vertical">
+          <Tabs
+            activeKey={loginType}
+            items={tabItems}
+            centered
+            onChange={(key: string) => {
+              setLoginType(key as "email" | "phone");
+              form.resetFields();
+            }}
+          />
 
-          <div>
-            <button
-              type="submit"
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          {loginType === "email" && (
+            <Form.Item
+              name="email"
+              className="!mb-4"
+              rules={[
+                { required: true, message: "请输入邮箱地址" },
+                { type: "email", message: "请输入有效的邮箱地址" },
+              ]}
             >
-              登录
-            </button>
+              <Input prefix={<MailOutlined />} placeholder="邮箱地址" />
+            </Form.Item>
+          )}
+
+          {loginType === "phone" && (
+            <Form.Item
+              name="phone"
+              className="!mb-4"
+              rules={[
+                { required: true, message: "请输入手机号" },
+                // { pattern: /^1\d{10}$/, message: '请输入有效的手机号' },
+              ]}
+            >
+              <Input prefix={<PhoneOutlined />} placeholder="手机号" />
+            </Form.Item>
+          )}
+
+          <Form.Item
+            name="password"
+            className="!mb-4"
+            rules={[{ required: true, message: "请输入密码" }]}
+          >
+            <Input.Password prefix={<LockOutlined />} placeholder="密码" />
+          </Form.Item>
+
+          <div className="flex justify-between mb-4">
+            <Button type="link" href="/login/register" className="p-0">
+              注册新账户
+            </Button>
+            <Button type="link" href="/login/forgot-password" className="p-0">
+              忘记密码？
+            </Button>
           </div>
-        </form>
-      </div>
+
+          <Form.Item>
+            <Button type="primary" onClick={handleLogin} block>
+              登录
+            </Button>
+          </Form.Item>
+        </Form>
+      </Card>
     </div>
   );
 }

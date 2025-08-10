@@ -1,66 +1,58 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { resetPassword } from "@/services/auth";
 
 export default function ResetPasswordPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const token = searchParams.get('token');
+  const token = searchParams.get("token");
 
   const [formData, setFormData] = useState({
-    password: '',
-    confirmPassword: '',
+    password: "",
+    confirmPassword: "",
   });
-  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
-  const [message, setMessage] = useState('');
+  const [status, setStatus] = useState<
+    "idle" | "loading" | "success" | "error"
+  >("idle");
+  const [message, setMessage] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!token) {
-      setStatus('error');
-      setMessage('无效的重置链接');
+      setStatus("error");
+      setMessage("无效的重置链接");
       return;
     }
 
     if (formData.password !== formData.confirmPassword) {
-      setStatus('error');
-      setMessage('两次输入的密码不一致');
+      setStatus("error");
+      setMessage("两次输入的密码不一致");
       return;
     }
 
-    setStatus('loading');
-    setMessage('');
+    setStatus("loading");
+    setMessage("");
 
     try {
-      const response = await fetch('http://localhost:8080/auth/reset-password', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          token,
-          password: formData.password,
-        }),
+      // 使用 auth 服务的 resetPassword 函数
+      await resetPassword({
+        token,
+        newPassword: formData.password,
       });
 
-      const data = await response.json();
+      setStatus("success");
+      setMessage("密码重置成功！");
 
-      if (!response.ok) {
-        throw new Error(data.message || '重置密码失败');
-      }
-
-      setStatus('success');
-      setMessage('密码重置成功！');
-      
       // 3秒后跳转到登录页
       setTimeout(() => {
-        router.push('/login');
+        router.push("/login");
       }, 3000);
     } catch (err) {
-      setStatus('error');
-      setMessage(err instanceof Error ? err.message : '重置密码失败');
+      setStatus("error");
+      setMessage(err instanceof Error ? err.message : "重置密码失败");
     }
   };
 
@@ -75,7 +67,7 @@ export default function ResetPasswordPage() {
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           {message && (
             <div
-              className={`text-center text-sm ${status === 'success' ? 'text-green-500' : 'text-red-500'}`}
+              className={`text-center text-sm ${status === "success" ? "text-green-500" : "text-red-500"}`}
             >
               {message}
             </div>
@@ -120,10 +112,10 @@ export default function ResetPasswordPage() {
           <div>
             <button
               type="submit"
-              disabled={status === 'loading'}
-              className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white ${status === 'loading' ? 'bg-indigo-400 cursor-not-allowed' : 'bg-indigo-600 hover:bg-indigo-700'} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
+              disabled={status === "loading"}
+              className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white ${status === "loading" ? "bg-indigo-400 cursor-not-allowed" : "bg-indigo-600 hover:bg-indigo-700"} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
             >
-              {status === 'loading' ? '重置中...' : '重置密码'}
+              {status === "loading" ? "重置中..." : "重置密码"}
             </button>
           </div>
         </form>

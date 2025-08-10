@@ -17,11 +17,14 @@
     "lint": "eslint --config eslint.config.cjs ."
   },
   "dependencies": {
+    "@ant-design/icons": "^6.0.0",
+    "@ant-design/v5-patch-for-react-19": "^1.0.3",
     "antd": "^5.26.7",
     "axios": "^1.11.0",
     "big.js": "^7.0.1",
     "dayjs": "^1.11.13",
     "next": "15.3.5",
+    "path-browserify": "^1.0.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "uuid": "^11.1.0"

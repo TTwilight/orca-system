@@ -13,6 +13,7 @@ export interface LoginEmailParams {
 export interface LoginMobileParams {
   phone: string;
   password: string;
+  countryCode?: string; // 国家/地区代码，如 +86、+1 等
 }
 
 export interface RegisterParams {

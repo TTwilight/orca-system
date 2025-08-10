@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Card, Form, Input, Button, Tabs, message } from "antd";
+import { Card, Form, Input, Button, Tabs, message, Select, Space } from "antd";
 import {
   UserOutlined,
   LockOutlined,
@@ -10,6 +10,7 @@ import {
   PhoneOutlined,
 } from "@ant-design/icons";
 import { loginByEmail, loginByMobile } from "@/services/auth";
+import { COUNTRY_CODES, getDefaultCountryCode } from "@/constants/country";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -33,6 +34,7 @@ export default function LoginPage() {
         result = await loginByMobile({
           phone: values.phone,
           password: values.password,
+          countryCode: values.countryCode || getDefaultCountryCode().value, // 使用默认国家代码
         });
       }
 
@@ -87,16 +89,31 @@ export default function LoginPage() {
           )}
 
           {loginType === "phone" && (
-            <Form.Item
-              name="phone"
-              className="!mb-4"
-              rules={[
-                { required: true, message: "请输入手机号" },
-                // { pattern: /^1\d{10}$/, message: '请输入有效的手机号' },
-              ]}
-            >
-              <Input prefix={<PhoneOutlined />} placeholder="手机号" />
-            </Form.Item>
+            <>
+              <Form.Item
+                name="countryCode"
+                initialValue={getDefaultCountryCode().value}
+                className="!mb-4"
+              >
+                <Select
+                  style={{ width: "100%" }}
+                  options={COUNTRY_CODES.map((country) => ({
+                    value: country.value,
+                    label: country.label,
+                  }))}
+                />
+              </Form.Item>
+              <Form.Item
+                name="phone"
+                className="!mb-4"
+                rules={[
+                  { required: true, message: "请输入手机号" },
+                  // 移除特定国家的手机号验证，因为不同国家格式不同
+                ]}
+              >
+                <Input prefix={<PhoneOutlined />} placeholder="手机号" />
+              </Form.Item>
+            </>
           )}
 
           <Form.Item

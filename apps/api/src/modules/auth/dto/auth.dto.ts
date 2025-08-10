@@ -1,4 +1,10 @@
-import { IsString, IsEmail, MinLength, IsPhoneNumber } from 'class-validator';
+import {
+  IsString,
+  IsEmail,
+  MinLength,
+  IsPhoneNumber,
+  isString,
+} from 'class-validator';
 
 export class LoginEmailDto {
   @IsEmail()
@@ -9,12 +15,15 @@ export class LoginEmailDto {
   password: string;
 }
 export class LoginMobileDto {
-  @IsPhoneNumber()
+  @IsString()
   phone: string;
 
   @IsString()
   @MinLength(6)
   password: string;
+
+  @IsString()
+  countryCode?: string;
 }
 
 export class ForgotPasswordDto {

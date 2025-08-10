@@ -4,6 +4,7 @@ import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../user/user.service';
 import { CreateUserDto } from '../user/dto/create-user.dto';
 import * as bcrypt from 'bcrypt';
+import { validatePhoneNumber } from '@/common/utils/phone.utils';
 
 @Injectable()
 export class AuthService {
@@ -60,15 +61,26 @@ export class AuthService {
     });
   }
 
-  async loginMobile(phone: string, password: string) {
-    console.log(phone, password);
+  async loginMobile(phone: string, password: string, countryCode?: string) {
+    console.log(phone, password, countryCode);
 
-    const user = await this.userService.findPwdHashByPhone(phone);
+    // 如果提供了国家代码，可以在这里处理
+    // 目前我们的数据库中没有存储国家代码，所以暂时只记录日志
+    if (countryCode) {
+      console.log(`用户使用国家代码 ${countryCode} 登录`);
+      // 未来可以根据需求修改数据库结构，存储用户的国家代码
+    }
+
+    const fullPhone = `${countryCode}${phone}`;
+    if (validatePhoneNumber(phone, countryCode)) {
+      throw new BusinessException(ErrorCode.FAIL, '无效的手机号');
+    }
+
+    const user = await this.userService.findPwdHashByPhone(fullPhone);
     if (!user) {
       throw new BusinessException(ErrorCode.PASSWORD_ERROR, '手机号或密码错误');
     }
-
-    console.log(user);
+    // console.log(user);
 
     const isPasswordValid = await bcrypt.compare(password, user.password_hash);
     if (!isPasswordValid) {

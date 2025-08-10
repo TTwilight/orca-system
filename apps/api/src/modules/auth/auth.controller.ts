@@ -34,6 +34,7 @@ export class AuthController {
     return this.authService.loginMobile(
       loginMobileDto.phone,
       loginMobileDto.password,
+      loginMobileDto.countryCode,
     );
   }
 

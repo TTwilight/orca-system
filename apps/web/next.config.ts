@@ -21,7 +21,6 @@ const nextConfig: NextConfig = {
   // 输出环境变量到客户端
   env: {
     APP_ENV: AppEnv,
-    NODE_ENV: process.env.NODE_ENV,
   },
   // 禁用 X-Powered-By header
   poweredByHeader: false,

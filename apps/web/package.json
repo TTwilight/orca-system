@@ -4,27 +4,37 @@
   "private": true,
   "scripts": {
     "prebuild": "rimraf dist",
-    "build-qa": "NODE_ENV=qa nest build",
-    "build-stage": "NODE_ENV=stage nest build",
-    "build-product": "NODE_ENV=product nest build",
-    "start": "next dev --turbopack",
-    "prod-start": "next start",
+    "dev": "next dev --turbopack",
+    "build": "next build",
+    "build:dev": "APP_ENV=development next build",
+    "build:qa": "APP_ENV=qa next build",
+    "build:stage": "APP_ENV=stage next build",
+    "build:prod": "APP_ENV=product next build",
+    "start": "APP_ENV=development next dev --turbopack",
+    "start:qa": "APP_ENV=qa next dev --turbopack",
+    "start:stage": "APP_ENV=stage next dev --turbopack",
+    "start:prod": "APP_ENV=product next dev --turbopack",
     "lint": "eslint --config eslint.config.cjs ."
   },
   "dependencies": {
+    "antd": "^5.26.7",
+    "axios": "^1.11.0",
+    "big.js": "^7.0.1",
+    "dayjs": "^1.11.13",
+    "next": "15.3.5",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "next": "15.3.5"
+    "uuid": "^11.1.0"
   },
   "devDependencies": {
-    "typescript": "^5",
+    "@eslint/eslintrc": "^3",
+    "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "@tailwindcss/postcss": "^4",
-    "tailwindcss": "^4",
     "eslint": "^9",
     "eslint-config-next": "15.3.5",
-    "@eslint/eslintrc": "^3"
+    "tailwindcss": "^4",
+    "typescript": "^5"
   }
 }

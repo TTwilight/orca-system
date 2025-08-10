@@ -72,7 +72,7 @@ export class AuthService {
     }
 
     const fullPhone = `${countryCode}${phone}`;
-    if (validatePhoneNumber(phone, countryCode)) {
+    if (!validatePhoneNumber(phone, countryCode)) {
       throw new BusinessException(ErrorCode.FAIL, '无效的手机号');
     }
 

@@ -2,18 +2,24 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Card, Form, Input, Button, Tabs, message, Select, Space } from "antd";
 import {
-  UserOutlined,
-  LockOutlined,
-  MailOutlined,
-  PhoneOutlined,
-} from "@ant-design/icons";
+  Card,
+  Form,
+  Input,
+  Button,
+  Tabs,
+  Select,
+  Space,
+  App,
+  message,
+} from "antd";
+import { LockOutlined, MailOutlined, PhoneOutlined } from "@ant-design/icons";
 import { loginByEmail, loginByMobile } from "@/services/auth";
 import { COUNTRY_CODES, getDefaultCountryCode } from "@/constants/country";
 
 export default function LoginPage() {
   const router = useRouter();
+  const [messageApi, contextHolder] = message.useMessage();
   const [form] = Form.useForm();
   const [loginType, setLoginType] = useState<"email" | "phone">("email");
 
@@ -38,10 +44,19 @@ export default function LoginPage() {
         });
       }
 
-      message.success("登录成功");
-      router.push("/");
+      console.log("result", result, messageApi);
+
+      if (result.code === "0") {
+        messageApi.success("登录成功");
+        setTimeout(() => {
+          router.push("/");
+        }, 1000);
+      } else {
+        messageApi.error(result.msg);
+        return;
+      }
     } catch (err) {
-      message.error(err instanceof Error ? err.message : "登录失败");
+      messageApi.error(err instanceof Error ? err.message : "登录失败");
     }
   };
 
@@ -139,6 +154,7 @@ export default function LoginPage() {
             </Button>
           </Form.Item>
         </Form>
+        {contextHolder}
       </Card>
     </div>
   );

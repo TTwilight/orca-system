@@ -30,6 +30,9 @@ export function validatePhoneNumber(
     throw new BusinessException(ErrorCode.FAIL, '不支持的国家或地区代码');
   }
 
+  console.log('validatePhoneNumber', cleanPhone, pattern);
+  console.log('validatePhoneNumber', pattern.test(cleanPhone));
+
   // 验证手机号格式
   if (!pattern.test(cleanPhone)) {
     throw new BusinessException(ErrorCode.FAIL, '无效的手机号格式');
